@@ -62,4 +62,10 @@ Filesystem      Size  Used Avail Use%
 ...
 ```
 
-## En
+## Environment
+
+This project was developed and tested in a Linux environment using WSL.
+
+## Objective
+
+The main objective of this project is to practice Python automation applied to Linux system administration, including file handling, JSON processing, command execution, error handling, and system information collection.
