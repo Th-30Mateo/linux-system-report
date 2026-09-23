@@ -67,7 +67,7 @@ try:
 
         date_report = datetime.datetime.now().strftime("%d-%m-%Y")
         time_report = datetime.datetime.now().strftime("%H:%M:%S")
-        dat.write(f"\n====REPORTE DE ERROR====\n")
+        dat.write(f"\n==== REPORTE GENERAL DEL SISTEMA Y LOGS ====\n")
         dat.write(f"\nFECHA: {date_report}\nHORA: {time_report}\n")
 
         # Escribimos el archivo .txt con los datos del log y el ID de proceso
@@ -114,7 +114,7 @@ try:
              sys.exit(1)
         dat.write(f"\n\nEspacio en disco:\n\n{disk_space.stdout}\n{eq}\n")
         dat.write(f"\nTiempo de encendido del sistema:\n\n{time_on_cpu.stdout}\n{eq}\n" )
-        dat.write(f"\nUso de RAM y CPU:\n\n{use_cpu_mem.stdout}\n{eq}\n")
+        dat.write(f"\nUso de RAM y CPU:\n\n{use_cpu_mem}\n{eq}\n")
         print(eq)
         print("✓ Archivo JSON leído correctamente.")
         print(f"✓ {len(data)} procesos incompletos encontrados.")
