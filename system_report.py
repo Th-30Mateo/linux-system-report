@@ -12,7 +12,7 @@ import subprocess
 try:
     valid_param = sys.argv[1]
 except IndexError:
-    print("ERROR, debes proporcionar como segundo argumento un archivo JSON")
+    print("ERROR: debes proporcionar como argumento un archivo JSON")
     sys.exit(1)
 
 out_file = "logs_estado.txt"
@@ -28,6 +28,26 @@ if os.path.exists(out_file):
 try:
     with open(valid_param, mode="r", encoding="utf-8") as file:
         logs = json.load(file)
+        required_keys = {"title", "id", "completed"}
+
+        if not isinstance(logs, list):
+            print("ERROR: el json debe contener una lista")
+            sys.exit(1)
+
+        for process in logs:
+            
+            if not isinstance(process, dict):
+                print("ERROR: cada proceso debe ser un objeto (dict)") 
+                sys.exit(1)
+
+            if not required_keys.issubset(process):
+                print("ERROR: faltan claves obligatorias")
+                sys.exit(1)
+
+            if not isinstance(process['completed'], bool):
+                print("ERROR: 'completed' debe ser un valor boolean")
+                sys.exit(1)
+
         data = [process for process in logs if not process["completed"]]
         print("JSON abierto correctamente.")
         # Abrimos el archivo que recibimos como parametro
@@ -39,6 +59,7 @@ except FileNotFoundError:
 
 except json.JSONDecodeError:
      print("ERROR el archivo no contiene un JSON valido")
+     sys.exit(1)
 
 try:
     with open(out_file, mode="a", encoding="utf-8") as dat:
@@ -60,30 +81,44 @@ try:
 
         # Añadimos estado general de la maquina utilizando la libreria subprocess
         # Y añadimos los resultados de los comandos al .txt
-        disk_space = subprocess.run(
+        try:
+            disk_space = subprocess.run(
                 ["df","-h"],
                 capture_output=True,
-                text=True
-        )
-        time_on_cpu = subprocess.run(
+                text=True,
+                check=True
+                )
+        except subprocess.CalledProcessError:
+             print("ERROR: no se pudo ejecutar el comando 'df -h'")
+             sys.exit(1)
+        try:
+            time_on_cpu = subprocess.run(
                 ["uptime"],
                 capture_output=True,
-                text=True
-        )
-
-        use_cpu_mem = subprocess.run(
-                "ps aux --sort=-%mem | head -6",
-                shell=True,
+                text=True,
+                check=True
+                )
+        except subprocess.CalledProcessError:
+             print("ERROR: no se pudo ejecutar el comando 'uptime'")
+             sys.exit(1)
+        try:
+            ps_result = subprocess.run(
+                ["ps", "aux", "--sort=-%mem"],
                 capture_output=True,
-                text=True
-        )
+                text=True,
+                check=True
+                )
+            use_cpu_mem = "\n".join(ps_result.stdout.splitlines()[:6])
+        except subprocess.CalledProcessError:
+             print("ERROR: el comando 'ps' no se pudo ejecutar")
+             sys.exit(1)
         dat.write(f"\n\nEspacio en disco:\n\n{disk_space.stdout}\n{eq}\n")
         dat.write(f"\nTiempo de encendido del sistema:\n\n{time_on_cpu.stdout}\n{eq}\n" )
         dat.write(f"\nUso de RAM y CPU:\n\n{use_cpu_mem.stdout}\n{eq}\n")
-        print("\nReporte creado exitosamente\n")
         print(eq)
         print("✓ Archivo JSON leído correctamente.")
         print(f"✓ {len(data)} procesos incompletos encontrados.")
         print(f"✓ Reporte generado correctamente: {out_file}")
+        print(eq)
 except PermissionError:
      print("ERROR, no tienes autorizacion para abrir el archivo de salida")
