@@ -1,64 +1,115 @@
 # Linux System Report
 
-Herramienta desarrollada en Python para practicar la automatización de tareas de administración de sistemas Linux. El proyecto procesa información desde un archivo JSON y genera un registro con información del sistema.
+Script de Python para practicar la automatización de tareas de administración de sistemas Linux. Procesa un archivo JSON con registros de procesos o tareas y genera un reporte de texto con los elementos incompletos y cierta información del sistema.
 
 ## Funcionalidades
 
-- Lectura de un archivo JSON proporcionado como argumento.
-- Filtrado de registros según su estado (`completed`).
-- Generación de un archivo de salida `logs_estado.txt`.
-- Consulta de información del sistema mediante comandos como `df -h`, `uptime` y `ps`.
-- Manejo de errores relacionados con argumentos, archivos y contenido JSON.
-- Validación del tamaño del archivo de entrada.
+- Lee un archivo JSON indicado como argumento de línea de comandos.
+- Valida que el contenido sea una lista de objetos con las claves obligatorias `title`, `id` y `completed`.
+- Comprueba que `completed` sea un valor booleano.
+- Filtra los registros cuyo estado sea `completed: false`.
+- Genera o amplía el archivo `logs_estado.txt`.
+- Incluye fecha y hora del reporte.
+- Recopila información del sistema mediante `df -h`, `uptime` y `ps aux --sort=-%mem`.
+- Limita el tamaño del archivo de entrada previsto por el programa a 10 MiB.
 
 ## Tecnologías
 
 - Python 3
 - JSON
 - Linux / WSL
-- Comandos de administración del sistema
-- Git y GitHub
+- Módulos estándar: `json`, `sys`, `datetime`, `os` y `subprocess`
 
 ## Requisitos
 
-- Python 3 instalado.
-- Linux o WSL para ejecutar los comandos del sistema.
+- Python 3.
+- Un entorno Linux o WSL con los comandos `df`, `uptime` y `ps` disponibles.
 
-## Uso
+## Instalación
 
-Ejecutá el script indicando la ruta del archivo JSON:
+Cloná el repositorio:
+
+```bash
+git clone https://github.com/Th-30Mateo/linux-system-report.git
+cd linux-system-report
+```
+
+No requiere instalar dependencias externas de Python: utiliza módulos de la biblioteca estándar.
+
+## Formato del archivo JSON
+
+El archivo debe contener una lista de objetos. Cada objeto debe incluir `title`, `id` y `completed`.
+
+Ejemplo válido (`procesos.json`):
+
+```json
+[
+  {
+    "title": "Actualizar paquetes",
+    "id": 101,
+    "completed": false
+  },
+  {
+    "title": "Revisar espacio en disco",
+    "id": 102,
+    "completed": true
+  },
+  {
+    "title": "Verificar servicios",
+    "id": 103,
+    "completed": false
+  }
+]
+```
+
+En este ejemplo, el reporte incluirá los registros 101 y 103, porque tienen `completed: false`.
+
+## Ejecución
+
+Desde el directorio del proyecto, ejecutá:
 
 ```bash
 python3 system_report.py procesos.json
 ```
 
-El archivo JSON debe contener los campos que espera el programa. Por ejemplo:
+Si el archivo se encuentra en otra ubicación, indicá su ruta.
 
-```json
-[
-  {
-    "name": "tarea-ejemplo",
-    "completed": false
-  },
-  {
-    "name": "tarea-finalizada",
-    "completed": true
-  }
-]
-```
+## Resultado
 
-El programa procesa los registros según la lógica implementada y genera el archivo de salida correspondiente.
+El programa crea o amplía el archivo `logs_estado.txt` en el directorio desde el que se ejecuta.
+
+El reporte incluye:
+
+- Fecha y hora de generación.
+- Título e identificador de cada registro incompleto.
+- Información del espacio en disco.
+- Tiempo de actividad del sistema.
+- Una selección de las primeras líneas de la salida de `ps`, ordenadas por uso de memoria.
+
+En la terminal se informa si el JSON se leyó correctamente, cuántos registros incompletos se encontraron y si se generó el reporte.
+
+## Manejo de errores
+
+El script contempla situaciones como:
+
+- No proporcionar el argumento del archivo.
+- No encontrar el archivo indicado.
+- Encontrar un JSON inválido.
+- Recibir una estructura que no sea una lista de objetos.
+- Detectar claves obligatorias ausentes o un valor no booleano en `completed`.
+- No poder abrir el archivo de salida por falta de permisos.
+
+## Limitaciones conocidas
+
+- El programa valida la presencia de las claves obligatorias, pero no comprueba todos sus tipos de datos.
+- El archivo `logs_estado.txt` se amplía en cada ejecución; solo se elimina cuando ya existe y su tamaño es igual o superior a 10 MiB al comenzar.
+- La información del sistema depende de los comandos disponibles en el entorno.
+- El programa no es una herramienta integral de monitorización ni sustituye soluciones profesionales.
 
 ## Objetivo de aprendizaje
 
-Este proyecto permite practicar el procesamiento de datos con Python, la lectura de archivos, el manejo de excepciones y la ejecución de comandos del sistema operativo.
+Practicar lectura y validación de JSON, manejo de archivos, excepciones, argumentos de consola y ejecución de comandos del sistema operativo desde Python.
 
-## Estado del proyecto
+## Estado
 
-Proyecto de práctica en evolución. La validación de entradas, el manejo de errores y la compatibilidad de los comandos con distintos entornos son aspectos que deben probarse y mejorarse de forma progresiva.
-
-## Limitaciones
-
-- La salida depende de los comandos disponibles en el sistema operativo.
-- El formato del JSON debe ajustarse a lo esperado por el programa.
-- El proyecto no reemplaza una herramienta profesional de monitorización o administración de sistemas.
+Proyecto de práctica en evolución.
