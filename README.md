@@ -1,71 +1,64 @@
 # Linux System Report
 
-Python automation script for Linux that processes information from a JSON file and generates a system report in `.txt` format.
+Herramienta desarrollada en Python para practicar la automatización de tareas de administración de sistemas Linux. El proyecto procesa información desde un archivo JSON y genera un registro con información del sistema.
 
-## Features
+## Funcionalidades
 
-* Reads a JSON file provided as a command-line argument.
-* Identifies incomplete processes from the JSON data.
-* Generates a system report in `logs_estado.txt`.
-* Collects Linux system information using:
+- Lectura de un archivo JSON proporcionado como argumento.
+- Filtrado de registros según su estado (`completed`).
+- Generación de un archivo de salida `logs_estado.txt`.
+- Consulta de información del sistema mediante comandos como `df -h`, `uptime` y `ps`.
+- Manejo de errores relacionados con argumentos, archivos y contenido JSON.
+- Validación del tamaño del archivo de entrada.
 
-  * `df -h`
-  * `uptime`
-  * `ps`
-* Handles common errors such as:
+## Tecnologías
 
-  * Missing command-line arguments.
-  * File not found.
-  * Invalid JSON format.
-* Controls the output file size and deletes it when it reaches 10 MB.
+- Python 3
+- JSON
+- Linux / WSL
+- Comandos de administración del sistema
+- Git y GitHub
 
-## Technologies
+## Requisitos
 
-* Python 3
-* JSON
-* Linux / WSL
-* `subprocess`
-* `sys`
-* `os`
-* `datetime`
+- Python 3 instalado.
+- Linux o WSL para ejecutar los comandos del sistema.
 
-## Usage
+## Uso
 
-Run the script from a Linux environment or WSL:
+Ejecutá el script indicando la ruta del archivo JSON:
 
 ```bash
 python3 system_report.py procesos.json
 ```
 
-The script generates:
+El archivo JSON debe contener los campos que espera el programa. Por ejemplo:
 
-```text
-logs_estado.txt
+```json
+[
+  {
+    "name": "tarea-ejemplo",
+    "completed": false
+  },
+  {
+    "name": "tarea-finalizada",
+    "completed": true
+  }
+]
 ```
 
-## Example
+El programa procesa los registros según la lógica implementada y genera el archivo de salida correspondiente.
 
-The generated report contains information such as:
+## Objetivo de aprendizaje
 
-```text
-====REPORTE DE ERROR====
+Este proyecto permite practicar el procesamiento de datos con Python, la lectura de archivos, el manejo de excepciones y la ejecución de comandos del sistema operativo.
 
-Fecha: 18-09-2026 03:22:15
+## Estado del proyecto
 
-Procesos incompletos:
-- Backup del sistema
-- Verificación de disco
+Proyecto de práctica en evolución. La validación de entradas, el manejo de errores y la compatibilidad de los comandos con distintos entornos son aspectos que deben probarse y mejorarse de forma progresiva.
 
-====EVALUACIÓN DEL SISTEMA====
+## Limitaciones
 
-Filesystem      Size  Used Avail Use%
-...
-```
-
-## Environment
-
-This project was developed and tested in a Linux environment using WSL.
-
-## Objective
-
-The main objective of this project is to practice Python automation applied to Linux system administration, including file handling, JSON processing, command execution, error handling, and system information collection.
+- La salida depende de los comandos disponibles en el sistema operativo.
+- El formato del JSON debe ajustarse a lo esperado por el programa.
+- El proyecto no reemplaza una herramienta profesional de monitorización o administración de sistemas.
